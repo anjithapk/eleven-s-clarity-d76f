@@ -293,17 +293,20 @@ export function ChatWithEleven() {
   const disabled = typing || step === "sending" || step === "done";
 
   return (
-    <div ref={sectionRef} className="overflow-hidden rounded-lg border border-border">
-      <header className="flex items-center gap-3 border-b border-border px-4 py-3">
-        <Emblem className="h-5 w-5 text-primary" title="Eleven" />
-        <p className="text-sm font-medium text-foreground">Eleven</p>
-        <p className="text-xs text-muted-foreground">
+    <div ref={sectionRef} className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <header className="flex items-center gap-3 border-b border-border px-5 py-4">
+        <Emblem className="h-7 w-7 text-primary" title="Eleven" />
+        <div>
+          <p className="text-sm font-semibold text-foreground">Eleven · here for you</p>
+          <p className="text-xs text-muted-foreground">
           {typing ? "typing…" : step === "done" ? "conversation complete" : "listening"}
-        </p>
+          </p>
+        </div>
+        <span className="signal-dot ml-auto h-2 w-2 rounded-full bg-signal" aria-hidden="true" />
       </header>
 
-      <Conversation className="h-[min(60vh,26rem)] min-h-80 sm:h-[30rem]" aria-live="polite">
-        <ConversationContent className="gap-4 px-4 py-5 sm:px-5">
+      <Conversation className="h-[min(60vh,28rem)] min-h-80 sm:h-[30rem]" aria-live="polite">
+        <ConversationContent className="gap-5 px-5 py-6 sm:px-7">
         {messages.length === 0 && !typing && (
           <p className="text-sm text-muted-foreground">Eleven will start the conversation.</p>
         )}
@@ -312,8 +315,8 @@ export function ChatWithEleven() {
             <MessageContent
               className={
                 m.from === "you"
-                  ? "max-w-[82%] rounded-lg bg-primary px-3.5 py-2 text-sm text-primary-foreground"
-                  : "max-w-[88%] px-0 py-0 text-sm leading-relaxed text-foreground sm:max-w-[85%]"
+                  ? "max-w-[82%] rounded-2xl rounded-tr-md bg-primary px-4 py-3 text-sm leading-relaxed text-primary-foreground"
+                  : "max-w-[88%] px-0 py-1 text-sm leading-relaxed text-foreground sm:max-w-[78%]"
               }
             >
               <MessageResponse>{m.text}</MessageResponse>
@@ -347,10 +350,10 @@ export function ChatWithEleven() {
         <ConversationScrollButton aria-label="Scroll to latest message" />
       </Conversation>
 
-      <div className="border-t border-border px-3 py-3 sm:px-4">
+      <div className="border-t border-border bg-background/50 px-4 py-4 sm:px-5">
         <PromptInput
           onSubmit={handleSend}
-          className="rounded-md border-input bg-transparent shadow-none transition-colors focus-within:border-primary/50"
+          className="rounded-xl border-input bg-background shadow-none transition-colors focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/10"
         >
           <PromptInputTextarea
           ref={inputRef}
@@ -369,7 +372,7 @@ export function ChatWithEleven() {
               {...(step === "sending" ? { status: "submitted" as const } : {})}
               disabled={disabled}
               aria-label={step === "done" ? "Conversation complete" : "Send message"}
-              className="size-10 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+              className="size-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
             />
           </PromptInputFooter>
         </PromptInput>

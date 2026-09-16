@@ -231,15 +231,22 @@ export function ChatWithEleven() {
           grievance: transcript,
         },
       });
-      if (result.emailStatus === "simulated") {
+      if (result.emailStatus === "failed") {
+        setTyping(false);
+        setFailedSubmissionId(result.id ?? null);
+        setNote(
+          result.saveStatus === "saved"
+            ? "Your message was saved, but I couldn't send the notification. You can try the notification again."
+            : "I couldn't store your message or send the notification. Your words are still here — you can try the notification again.",
+        );
+      } else if (result.emailStatus === "simulated") {
         await elevenSays(["Conversation complete."]);
         setNote(
           "Your message was saved. In this local preview, the notification email is simulated because email delivery is not configured.",
         );
-      } else if (result.emailStatus === "failed") {
-        setTyping(false);
-        setFailedSubmissionId(result.id ?? null);
-        setNote("Your message was saved, but I couldn't send the notification. You can try the notification again.");
+      } else if (result.saveStatus === "failed") {
+        await elevenSays(["Conversation complete."]);
+        setNote("The notification was delivered, though your message couldn't be stored this time.");
       } else {
         await elevenSays(["Conversation complete."]);
         setNote("Your message was saved, and the notification was delivered.");
@@ -248,6 +255,9 @@ export function ChatWithEleven() {
     } catch (err) {
       setTyping(false);
       console.error(err);
+      // The transcript stays in the conversation; only the last turn is unwound
+      // so the visitor can resend without retyping anything.
+      setFailedSubmissionId(null);
       setNote("Something got in the way of sending that. Your message is still here, so you can try again.");
       grievanceParts.current.pop();
       aiHistory.current.pop();
@@ -266,7 +276,17 @@ export function ChatWithEleven() {
     setNote(null);
     try {
       const result = await retryNotification({
-        data: { submissionId: failedSubmissionId, email: answers.current["email"] ?? "" },
+        data: {
+          submissionId: failedSubmissionId,
+          email: answers.current["email"] ?? "",
+          payload: {
+            name: answers.current["name"] ?? "",
+            age: Number(answers.current["age"] ?? 0),
+            location: answers.current["location"] ?? "",
+            email: answers.current["email"] ?? "",
+            grievance: answers.current["grievance"] ?? "",
+          },
+        },
       });
       setTyping(false);
       if (result.emailStatus === "sent") {

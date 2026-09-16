@@ -276,7 +276,17 @@ export function ChatWithEleven() {
     setNote(null);
     try {
       const result = await retryNotification({
-        data: { submissionId: failedSubmissionId, email: answers.current["email"] ?? "" },
+        data: {
+          submissionId: failedSubmissionId,
+          email: answers.current["email"] ?? "",
+          payload: {
+            name: answers.current["name"] ?? "",
+            age: Number(answers.current["age"] ?? 0),
+            location: answers.current["location"] ?? "",
+            email: answers.current["email"] ?? "",
+            grievance: answers.current["grievance"] ?? "",
+          },
+        },
       });
       setTyping(false);
       if (result.emailStatus === "sent") {
